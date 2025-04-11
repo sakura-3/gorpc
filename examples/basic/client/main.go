@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"gorpc"
 	"log"
 	"sync"
@@ -23,12 +22,15 @@ func main() {
 		wg.Add(1)
 		go func(i int) {
 			defer wg.Done()
-			args := fmt.Sprintf("gorpc req %d", i)
-			var reply string
+			args := struct {
+				Num1, Num2 int
+			}{i, i * i}
+			var reply int
+
 			if err := client.Call("Foo.Sum", args, &reply); err != nil {
 				log.Fatal("call Foo.Sum error:", err)
 			}
-			log.Println("reply:", reply)
+			log.Printf("%d + %d = %d", args.Num1, args.Num2, reply)
 		}(i)
 	}
 	wg.Wait()
