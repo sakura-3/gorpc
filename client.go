@@ -13,6 +13,7 @@ import (
 	"io"
 	"log"
 	"net"
+	"strings"
 	"sync"
 	"time"
 )
@@ -270,6 +271,11 @@ func dialTimeout(f newClientFunc, network, address string, opts ...*Option) (cli
 }
 
 // Dial connects to an RPC server at the specified network address
-func Dial(network, address string, opts ...*Option) (*Client, error) {
-	return dialTimeout(NewClient, network, address, opts...)
+func Dial(rpcAddr string, opts ...*Option) (*Client, error) {
+	parts := strings.Split(rpcAddr, "@")
+	if len(parts) != 2 {
+		return nil, fmt.Errorf("rpc client err: wrong format '%s', expect protocol@addr", rpcAddr)
+	}
+	protocol, addr := parts[0], parts[1]
+	return dialTimeout(NewClient, protocol, addr, opts...)
 }

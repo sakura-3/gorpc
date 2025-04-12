@@ -10,7 +10,7 @@ import (
 
 func main() {
 	// client
-	client, err := gorpc.Dial("tcp", ":8080")
+	client, err := gorpc.Dial("tcp@localhost:8080")
 	if err != nil {
 		log.Panic(err)
 	}

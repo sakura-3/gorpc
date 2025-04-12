@@ -28,7 +28,7 @@ func startServer(addr chan string) {
 
 func TestClient_dialTimeout(t *testing.T) {
 	t.Parallel()
-	l, _ := net.Listen("tcp", ":0")
+	l, _ := net.Listen("tcp", "localhost:0")
 
 	f := func(conn net.Conn, opt *Option) (client *Client, err error) {
 		_ = conn.Close()
@@ -52,7 +52,7 @@ func TestClient_Call(t *testing.T) {
 	addr := <-addrCh
 	time.Sleep(time.Second)
 	t.Run("client timeout", func(t *testing.T) {
-		client, _ := Dial("tcp", addr)
+		client, _ := Dial("tcp@" + addr)
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 		defer cancel()
 		var reply int
@@ -60,7 +60,7 @@ func TestClient_Call(t *testing.T) {
 		assert.True(t, err != nil && strings.Contains(err.Error(), ctx.Err().Error()), "expect a timeout error")
 	})
 	t.Run("server handle timeout", func(t *testing.T) {
-		client, _ := Dial("tcp", addr, &Option{
+		client, _ := Dial("tcp@"+addr, &Option{
 			HandleTimeout: time.Second,
 		})
 		var reply int
